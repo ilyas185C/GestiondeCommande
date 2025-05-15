@@ -17,8 +17,9 @@
             --text-color: #495057;
             --text-light: #6c757d;
             --border-color: #e9ecef;
+            --danger-color: #dc3545;
         }
-        
+
         body {
             min-height: 100vh;
             color: var(--text-color);
@@ -26,7 +27,7 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             padding-top: var(--header-height);
         }
-        
+
         /* Header Styles */
         .app-header {
             position: fixed;
@@ -41,7 +42,7 @@
             align-items: center;
             padding: 0 25px;
         }
-        
+
         .logo {
             font-weight: 700;
             font-size: 1.5rem;
@@ -49,11 +50,11 @@
             display: flex;
             align-items: center;
         }
-        
+
         .logo i {
             margin-right: 10px;
         }
-        
+
         /* Sidebar Styles */
         .sidebar {
             width: var(--sidebar-width);
@@ -65,12 +66,20 @@
             left: 0;
             overflow-y: auto;
             z-index: 900;
+            display: flex;
+            flex-direction: column;
         }
-        
+
         .sidebar-menu {
             padding: 20px 0;
+            flex-grow: 1;
         }
-        
+
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
         .nav-title {
             font-size: 0.8rem;
             font-weight: 600;
@@ -80,7 +89,7 @@
             letter-spacing: 0.5px;
             margin-top: 10px;
         }
-        
+
         .sidebar-link {
             display: flex;
             align-items: center;
@@ -89,42 +98,51 @@
             text-decoration: none;
             transition: all 0.2s;
         }
-        
+
         .sidebar-link:hover, .sidebar-link.active {
             background-color: rgba(58, 123, 213, 0.1);
             color: var(--primary-color);
             border-left: 3px solid var(--primary-color);
         }
-        
+
         .sidebar-link i {
             margin-right: 12px;
             width: 20px;
             text-align: center;
             font-size: 1.1rem;
         }
-        
+
+        .sidebar-link.logout {
+            color: var(--danger-color);
+        }
+
+        .sidebar-link.logout:hover {
+            background-color: rgba(220, 53, 69, 0.1);
+            border-left: 3px solid var(--danger-color);
+        }
+
         /* Submenu Styles */
         .submenu {
             padding-left: 20px;
         }
-        
+
         .submenu .sidebar-link {
             padding: 10px 25px 10px 45px;
             font-size: 0.95rem;
             border-left: none;
         }
-        
+
         .submenu .sidebar-link i {
             font-size: 0.9rem;
         }
-        
+
         /* Main Content Styles */
         .main-content {
             margin-left: var(--sidebar-width);
             padding: 30px;
             min-height: calc(100vh - var(--header-height) - var(--footer-height));
         }
-        
+
         /* Footer Styles */
         .app-footer {
             position: fixed;
@@ -140,7 +158,7 @@
             z-index: 800;
             padding: 0 30px;
         }
-        
+
         .footer-content {
             color: var(--text-light);
             font-size: 0.9rem;
@@ -148,23 +166,23 @@
             display: flex;
             justify-content: space-between;
         }
-        
+
         /* Responsive Adjustments */
         @media (max-width: 992px) {
             .sidebar {
                 transform: translateX(-100%);
                 transition: transform 0.3s ease;
             }
-            
+
             .sidebar.active {
                 transform: translateX(0);
             }
-            
+
             .main-content, .app-footer {
                 margin-left: 0;
             }
         }
-        
+
         /* Card Styles */
         .card {
             border: none;
@@ -172,20 +190,59 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.03);
             margin-bottom: 25px;
         }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            padding: 15px 25px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 10px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: bold;
+        }
+
+        .user-info {
+            flex-grow: 1;
+        }
+
+        .user-name {
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .user-email {
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
     </style>
 </head>
 <body>
     <!-- Header -->
     <header class="app-header">
-        <div class="logo">
+        <a href="{{ route('home') }}">
+                    <div class="logo">
             <i class="fas fa-box-open"></i>
             <span>Gestion de Commande</span>
         </div>
+        </a>
     </header>
 
     <!-- Sidebar -->
     <nav class="sidebar">
         <div class="sidebar-menu">
+
+
             <!-- Gestion Section -->
             <div class="nav-title">Gestion</div>
             <a href="{{ route('clients.index') }}" class="sidebar-link">
@@ -225,8 +282,31 @@
                     Statistiques par Produit
                 </a>
             </div>
+            <form method="POST" action="{{ route('logout') }}" id="logout-form">
+                @csrf
+                <a href="#" class="sidebar-link logout" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Déconnexion
+                </a>
+            </form>
         </div>
+                    <a href="{{ route('profil.show') }}">
+            <div class="user-profile">
+
+                    <div class="user-avatar">
+                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                </div>
+                <div class="user-info">
+                    <div class="user-name">{{ Auth::user()->name }}</div>
+                    <div class="user-email">{{ Auth::user()->email }}</div>
+                </div>
+
+            </div>
+            </a>
+ -
     </nav>
+                <!-- User Profile Section -->
+
 
     <!-- Main Content -->
     <main class="main-content">
@@ -259,7 +339,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Mobile sidebar toggle functionality can be added here
         document.addEventListener('DOMContentLoaded', function() {
             // Mobile menu toggle implementation if needed
         });

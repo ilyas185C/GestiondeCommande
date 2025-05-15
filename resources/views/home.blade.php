@@ -15,6 +15,81 @@
             </div>
         </div>
 
+        <!-- Stats Cards -->
+        <div class="row mb-4">
+            <!-- Total Clients Card -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-primary shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                    Total Clients</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $stats['total_clients'] }}</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-users fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Produits Card -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-success shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                    Total Produits</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $stats['total_produits'] }}</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-box-open fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Commandes Card -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-info shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                    Total Commandes</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $stats['total_commandes'] }}</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-shopping-cart fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chiffre d'Affaires Card -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-warning shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                    Chiffre d'Affaires</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ number_format($stats['total_revenue'], 2) }} €</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-euro-sign fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Welcome Card -->
         <div class="card shadow mb-4 border-0 bg-primary text-white">
             <div class="card-body py-4">
@@ -26,6 +101,37 @@
                     </div>
                     <div class="col-md-4 text-md-end mt-3 mt-md-0">
                         <i class="fas fa-store-alt fa-4x opacity-25"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="row mb-4">
+            <!-- Commandes par Mois Chart -->
+            <div class="col-xl-6 mb-4">
+                <div class="card shadow h-100">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Commandes par Mois</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-area">
+                            <canvas id="commandesChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Clients par Mois Chart -->
+            <div class="col-xl-6 mb-4">
+                <div class="card shadow h-100">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Clients par Mois</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-area">
+                            <canvas id="clientsChart"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -113,7 +219,39 @@
                     </div>
                 </div>
             </div>
-            
+
+            <!-- Dernières Commandes Card -->
+            <div class="col-xl-6 mb-4">
+                <div class="card shadow h-100">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Dernières Commandes</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Client</th>
+                                        <th>Date</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($latestCommandes as $commande)
+                                    <tr>
+                                        <td>{{ $commande->id }}</td>
+                                        <td>{{ $commande->client->nom }}</td>
+                                        <td>{{ $commande->date_commande->format('d/m/Y') }}</td>
+                                        <td>{{ number_format($commande->produits->sum(function($p) { return $p->pivot->quantite * $p->prix_unitaire; }), 2) }} €</td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Recherche Section -->
@@ -175,5 +313,84 @@
         .feature-icon:hover {
             transform: scale(1.1);
         }
+
+        .chart-area {
+            position: relative;
+            height: 250px;
+            width: 100%;
+        }
     </style>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Commandes par Mois Chart
+        const commandesCtx = document.getElementById('commandesChart').getContext('2d');
+        const commandesChart = new Chart(commandesCtx, {
+            type: 'line',
+            data: {
+                labels: {!! json_encode($commandesParMois->pluck('month')) !!},
+                datasets: [{
+                    label: 'Commandes',
+                    data: {!! json_encode($commandesParMois->pluck('count')) !!},
+                    backgroundColor: 'rgba(78, 115, 223, 0.05)',
+                    borderColor: 'rgba(78, 115, 223, 1)',
+                    pointBackgroundColor: 'rgba(78, 115, 223, 1)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgba(78, 115, 223, 1)',
+                    tension: 0.3,
+                    fill: true
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0
+                        }
+                    }
+                }
+            }
+        });
+
+        // Clients par Mois Chart
+        const clientsCtx = document.getElementById('clientsChart').getContext('2d');
+        const clientsChart = new Chart(clientsCtx, {
+            type: 'bar',
+            data: {
+                labels: {!! json_encode($clientsParMois->pluck('month')) !!},
+                datasets: [{
+                    label: 'Clients',
+                    data: {!! json_encode($clientsParMois->pluck('count')) !!},
+                    backgroundColor: 'rgba(28, 200, 138, 0.7)',
+                    borderColor: 'rgba(28, 200, 138, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0
+                        }
+                    }
+                }
+            }
+        });
+    </script>
 @endsection

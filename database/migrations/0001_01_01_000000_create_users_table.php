@@ -17,8 +17,27 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+
+            // Champs d'adresse
+            $table->string('phone')->nullable()->comment('Numéro de téléphone');
+            $table->string('address_line1')->nullable()->comment('Adresse ligne 1');
+            $table->string('address_line2')->nullable()->comment('Adresse ligne 2 (complément)');
+            $table->string('street')->nullable()->comment('Nom de la rue');
+            $table->string('city')->nullable()->comment('Ville');
+            $table->string('state')->nullable()->comment('État/Région');
+            $table->string('zip_code')->nullable()->comment('Code postal');
+            $table->string('country')->nullable()->default('France')->comment('Pays');
+
+            // 5 champs supplémentaires utiles
+            $table->date('birth_date')->nullable()->comment('Date de naissance');
+            $table->string('gender')->nullable()->comment('Genre');
+            $table->string('profession')->nullable()->comment('Profession');
+            $table->text('notes')->nullable()->comment('Notes supplémentaires');
+            $table->boolean('is_active')->default(true)->comment('Compte actif');
+
             $table->rememberToken();
             $table->timestamps();
+            $table->softDeletes(); // Ajout du soft delete
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
