@@ -1,13 +1,19 @@
 @extends('layouts.master')
 
 @section('title', 'Statistiques par Produit')
+
 @section('content')
 <div class="container-fluid">
     <div class="card shadow-sm">
-        <div class="card-header bg-white">
-            <h3 class="card-title">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <h3 class="card-title mb-0">
                 <i class="fas fa-chart-bar me-2"></i>Statistiques par Produit
             </h3>
+            @if($statistiques->isNotEmpty())
+                <a href="{{ route('recherche.telecharger') }}" class="btn btn-success">
+                    <i class="fas fa-download me-1"></i> Télécharger
+                </a>
+            @endif
         </div>
         <div class="card-body">
             @if($statistiques->isNotEmpty())

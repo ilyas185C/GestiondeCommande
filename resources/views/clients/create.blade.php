@@ -18,20 +18,35 @@
             <h6 class="m-0 font-weight-bold text-primary">Formulaire de création</h6>
         </div>
         <div class="card-body">
+            <!-- Affichage des erreurs en haut du formulaire -->
+            @if ($errors->any())
+                <div class="alert alert-danger mb-4">
+                    <div class="font-weight-bold">
+                        <i class="fas fa-exclamation-triangle me-1"></i>
+                        Veuillez corriger les erreurs suivantes:
+                    </div>
+                    <ul class="mb-0 mt-2">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <form action="{{ route('clients.store') }}" method="POST">
                 @csrf
 
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label for="nom" class="form-label">Nom complet <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control @error('nom') is-invalid @enderror" id="nom" name="nom" value="{{ old('nom') }}" required>
+                        <input type="text" class="form-control @error('nom') is-invalid @enderror" id="nom" name="nom" value="{{ old('nom') }}" >
                         @error('nom')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
                     <div class="col-md-6">
                         <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
-                        <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email') }}" required>
+                        <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email') }}" >
                         @error('email')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -41,14 +56,14 @@
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label for="telephone" class="form-label">Téléphone <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control @error('telephone') is-invalid @enderror" id="telephone" name="telephone" value="{{ old('telephone') }}" required>
+                        <input type="text" class="form-control @error('telephone') is-invalid @enderror" id="telephone" name="telephone" value="{{ old('telephone') }}" >
                         @error('telephone')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
                     <div class="col-md-6">
                         <label for="adresse" class="form-label">Adresse <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control @error('adresse') is-invalid @enderror" id="adresse" name="adresse" value="{{ old('adresse') }}" required>
+                        <input type="text" class="form-control @error('adresse') is-invalid @enderror" id="adresse" name="adresse" value="{{ old('adresse') }}" >
                         @error('adresse')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror

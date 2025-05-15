@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\DB;
 
 class RechercheController extends Controller
 {
-    // Méthode unifiée pour les commandes par client
     public function commandesParClient(Request $request)
     {
         $clients = Client::orderBy('nom')->get();
@@ -32,7 +31,6 @@ class RechercheController extends Controller
         ]);
     }
 
-    // Méthode optimisée pour le montant par période
     public function montantParPeriode(Request $request)
     {
         $annees = Commande::selectRaw('DISTINCT YEAR(date_commande) as annee')
@@ -82,5 +80,67 @@ class RechercheController extends Controller
             ->get();
 
         return view('recherche.statistiques-produit', compact('statistiques'));
+    }
+    public function telecharger()
+    {
+        // Récupérer les statistiques exactement de la même manière que dans la méthode statistiquesProduit
+        $statistiques = DB::table('commande_produit')
+            ->join('produits', 'produits.id', '=', 'commande_produit.produit_id')
+            ->join('commandes', 'commandes.id', '=', 'commande_produit.commande_id')
+            ->whereNotIn('commandes.etat_commande', ['annulée'])
+            ->select([
+                'produits.id',
+                'produits.nom',
+                'produits.prix_unitaire',
+                DB::raw('SUM(commande_produit.quantite) as quantite_totale'),
+                DB::raw('SUM(commande_produit.quantite * produits.prix_unitaire) as chiffre_affaires')
+            ])
+            ->groupBy('produits.id', 'produits.nom', 'produits.prix_unitaire')
+            ->orderByDesc('chiffre_affaires')
+            ->get();
+
+        // Créez un fichier CSV
+        $filename = 'statistiques_produits_' . date('Y-m-d') . '.csv';
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ];
+
+        $callback = function () use ($statistiques) {
+            $file = fopen('php://output', 'w');
+            // Ajoutez l'en-tête UTF-8 BOM pour une compatibilité Excel
+            fputs($file, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
+            // En-têtes
+            fputcsv($file, ['Produit', 'Prix Unitaire (€)', 'Quantité Vendue', 'Chiffre d\'Affaires (€)', 'Pourcentage']);
+
+            // Calculer le total pour le pourcentage
+            $totalChiffreAffaires = $statistiques->sum('chiffre_affaires');
+
+            // Données
+            foreach ($statistiques as $stat) {
+                $pourcentage = round(($stat->chiffre_affaires / $totalChiffreAffaires) * 100, 1);
+                fputcsv($file, [
+                    $stat->nom,
+                    number_format($stat->prix_unitaire, 2, ',', ''),
+                    $stat->quantite_totale,
+                    number_format($stat->chiffre_affaires, 2, ',', ''),
+                    $pourcentage . '%'
+                ]);
+            }
+
+            // Ligne de total
+            fputcsv($file, [
+                'Total Général',
+                '',
+                '',
+                number_format($totalChiffreAffaires, 2, ',', ''),
+                '100%'
+            ]);
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 }

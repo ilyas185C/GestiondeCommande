@@ -1,4 +1,3 @@
-
 <?php
 
 use Illuminate\Support\Facades\Route;
@@ -15,7 +14,7 @@ use App\Http\Controllers\RechercheController;
 |--------------------------------------------------------------------------
 */
 
-// Route d'accueil// Route d'accueil
+// Route d'accueil
 Route::get('/', function () {
     return view('home');
 })->name('home');
@@ -47,4 +46,8 @@ Route::post('/recherche/commandes-par-client', [RechercheController::class, 'rec
 Route::get('/recherche/montant-par-periode', [RechercheController::class, 'montantParPeriode'])->name('recherche.montant-par-periode');
 Route::post('/recherche/montant-par-periode', [RechercheController::class, 'rechercherMontantParPeriode'])->name('recherche.montant-par-periode.rechercher');
 
+// Route pour les statistiques par produit
 Route::get('/recherche/statistiques-produit', [RechercheController::class, 'statistiquesProduit'])->name('recherche.statistiques-produit');
+
+// Route pour le téléchargement des statistiques
+Route::get('/recherche/telecharger', [RechercheController::class, 'telecharger'])->name('recherche.telecharger');
