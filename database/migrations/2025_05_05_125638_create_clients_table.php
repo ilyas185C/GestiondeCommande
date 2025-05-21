@@ -12,12 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('clients', function (Blueprint $table) {
-            $table->id(); 
+            $table->id();
+            $table->unsignedBigInteger('user_id')->nullable()->unique(); // user_id nullable et unique (si 1 user = 1 client)
             $table->string('nom');
             $table->string('email')->unique();
             $table->string('telephone');
             $table->string('adresse');
             $table->timestamps();
+
+            // clé étrangère
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

@@ -5,9 +5,15 @@ namespace App\Http\Controllers;
 use App\Models\Client;
 use App\Http\Requests\StoreClientRequest;
 use App\Http\Requests\UpdateClientRequest;
+use Illuminate\Support\Facades\Auth;
 
 class ClientController extends Controller
 {
+    public function accueil()
+    {
+        $commandes = Auth::user()->client->commandes ?? [];
+        return view('client.accueil', compact('commandes'));
+    }
     public function index()
     {
         $clients = Client::latest()->paginate(10);

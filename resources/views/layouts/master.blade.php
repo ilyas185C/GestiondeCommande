@@ -290,7 +290,7 @@
                 </a>
             </form>
         </div>
-                    <a href="{{ route('profil.show') }}">
+                    
             <div class="user-profile">
 
                     <div class="user-avatar">

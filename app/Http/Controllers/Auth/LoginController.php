@@ -15,22 +15,26 @@ class LoginController extends Controller
     }
 
     public function login(Request $request)
-    {
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
-        ]);
+{
+    $credentials = $request->validate([
+        'email' => ['required', 'email'],
+        'password' => ['required'],
+    ]);
 
-        if (Auth::attempt($credentials, $request->boolean('remember'))) {
-            $request->session()->regenerate();
-            return redirect()->intended(route('home'));
+    if (Auth::attempt($credentials)) {
+        $request->session()->regenerate();
+
+        if (Auth::user()->role === 'admin') {
+            return redirect()->route('home');
+        } else {
+            return redirect()->intended('/client/accueil');
         }
-
-        throw ValidationException::withMessages([
-            'email' => __('Les identifiants fournis ne correspondent pas à nos enregistrements.'),
-        ]);
     }
 
+    throw ValidationException::withMessages([
+        'email' => __('Les identifiants fournis ne correspondent pas à nos enregistrements.'),
+    ]);
+}
     public function logout(Request $request)
     {
         Auth::logout();

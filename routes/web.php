@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\CategorieController;
 use App\Http\Controllers\ProduitController;
@@ -11,6 +10,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,9 +39,7 @@ Route::middleware('guest')->group(function () {
 Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-
-// Routes protégées
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'admin'])->group(function () {
     // Page d'accueil
     Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -74,7 +72,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/statistiques-produit', [RechercheController::class, 'statistiquesProduit'])->name('recherche.statistiques-produit');
         Route::get('/telecharger', [RechercheController::class, 'telecharger'])->name('recherche.telecharger');
     });
-    Route::prefix('user')->group(function() {
-        Route::get('/profile', [UserController::class, 'show'])->name('profil.show');
-    });
+});
+Route::middleware(['auth', 'client'])->group(function () {
+    Route::get('/client/accueil', [ClientController::class, 'accueil'])->name('client.accueil');
 });

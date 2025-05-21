@@ -20,4 +20,8 @@ class Client extends Model
     {
         return $this->hasMany(Commande::class);
     }
+        public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
